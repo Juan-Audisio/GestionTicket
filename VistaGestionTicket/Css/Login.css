@@ -1,0 +1,37 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100%;
+    background-image: url('../lib/Img/login2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cardlogin{
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(228, 228, 228, 0.842);
+    padding: 20px 15px; 
+    width: 25vw;
+    height: 30vw; 
+    margin: auto;
+    margin-bottom: 25px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px) brightness(1.2) saturate(150%);
+    position: absolute;
+    left: 10%;
+  
+  }
+
+  .titulologuin {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+}

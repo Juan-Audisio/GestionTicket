@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar</title>
+
+    <link href="../lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../Css/Login.css" rel="stylesheet">
+</head>
+<body>
+
+    <H1 class="display-1 titulologuin">Registrate aqui</H1>
+
+    <div class="cardlogin">
+        <h2>Registro</h2>
+        <form id="registerForm" method="post">
+            <div class="form-outline mb-3">
+                <input type="text" id="regNombre" class="form-control bg-white text-dark" placeholder="Nombre completo" required><br>
+            </div>
+            <div class="form-outline mb-3">
+                <input type="email" id="regEmail" class="form-control bg-white text-dark" placeholder="Email" required><br>
+            </div>
+            <div class="form-outline mb-3">
+                <input type="password" id="regPassword" class="form-control bg-white text-dark" placeholder="Contraseña" required><br>
+            </div>
+            <a href="Login.html">¿Deseas Ingresar Ahora?</a>
+            
+            <button type="submit" class="btn btn-light btn-block w-100">Registrar</button>
+        </form>
+    </div>
+
+    <script src="../Js/Register.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
