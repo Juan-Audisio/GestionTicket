@@ -8,7 +8,7 @@ namespace GestionTicket.Models;
         [Key]
         public int CategoriaID { get; set; }
         public string? Descripcion { get; set; }
-        public bool Eliminado {get; set; } = true;    
+        public bool? Eliminado {get; set; } = true;    
 
-        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public ICollection<Ticket>? Tickets { get; set; }
     }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\gestionticket\\GestionTicket.csproj": {}
+    "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\GestionTicket-1\\gestionticket\\GestionTicket.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\gestionticket\\GestionTicket.csproj": {
+    "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\GestionTicket-1\\gestionticket\\GestionTicket.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\gestionticket\\GestionTicket.csproj",
+        "projectUniqueName": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\GestionTicket-1\\gestionticket\\GestionTicket.csproj",
         "projectName": "GestionTicket",
-        "projectPath": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\gestionticket\\GestionTicket.csproj",
+        "projectPath": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\GestionTicket-1\\gestionticket\\GestionTicket.csproj",
         "packagesPath": "C:\\Users\\Audisio\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\gestionticket\\obj\\",
+        "outputPath": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\GestionTicket-1\\gestionticket\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Audisio\\AppData\\Roaming\\NuGet\\NuGet.Config"

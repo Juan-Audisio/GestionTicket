@@ -13,7 +13,7 @@ public class Ticket
     public Prioridad Prioridad { get; set; }
     public DateTime FechaCreacion { get; set; }
     public DateTime FechaCierre { get; set; }
-    public int UsuarioClienteID { get; set; }
+    // public int UsuarioClienteID { get; set; }
     public int CategoriaID { get; set; }
 
     public virtual Categoria Categorias { get; set; }

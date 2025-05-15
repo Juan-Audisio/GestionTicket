@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using GestionTicket.Models;
 
 namespace GestionTicket.Controllers
 {
-
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CategoriaController : ControllerBase

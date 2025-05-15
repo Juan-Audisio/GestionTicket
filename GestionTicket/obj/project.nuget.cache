@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "R6igTnF1fnpSTAKk4kc6IhQJx2wmRDzX7hrG3IrHU5MIA/tPW1y2qPoJInCDBHlAA0tNr7ISzWPZVYxeKib4tg==",
+  "dgSpecHash": "vc33Hz7DuvYcwq6NrDqrCCRjxZBugRqg1j1tr6H+BAl+sChdcLYlghpkGjn9ct6YTECwmXkr0aDMs9iuzXiZJw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\gestionticket\\GestionTicket.csproj",
+  "projectFilePath": "C:\\Users\\Audisio\\OneDrive\\Desktop\\ProgramacionApi\\GestionTicket-1\\gestionticket\\GestionTicket.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Audisio\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\Audisio\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

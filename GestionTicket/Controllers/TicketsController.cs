@@ -6,6 +6,7 @@ using GestionTicket.Models;
 
 namespace GestionTicket.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class TicketsController : ControllerBase
@@ -31,7 +32,7 @@ public async Task<ActionResult<IEnumerable<TicketVista>>> GetTickets()
             FechaCreacion = t.FechaCreacion,
             // FechaCreacionString = t.FechaCreacion.ToString("dd/MM/yyyy"),
             FechaCierre = t.FechaCierre,
-            UsuarioClienteID = t.UsuarioClienteID,
+            // UsuarioClienteID = t.UsuarioClienteID,
             CategoriaID = t.CategoriaID,
             CategoriaDescripcion = t.Categorias.Descripcion.ToString(),
         })
@@ -100,30 +101,24 @@ public async Task<ActionResult<IEnumerable<TicketVista>>> GetTickets()
         }
 
       [HttpPost]
-public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
-{
-    if (ticket == null)
+    public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
     {
-        return BadRequest("No se pudo procesar el ticket.");
+        if (ticket == null)
+        {
+            return BadRequest("No se pudo procesar el ticket.");
+        }
+
+        // Asignamos la fecha de creación automáticamente
+        ticket.FechaCreacion = DateTime.Now;
+
+        // Añadimos el ticket a la base de datos
+        _context.Tickets.Add(ticket);
+
+            await _context.SaveChangesAsync();
+
+
+        return CreatedAtAction("GetTicket", new { id = ticket.TicketID }, ticket);
     }
-
-    // Asignamos la fecha de creación automáticamente
-    ticket.FechaCreacion = DateTime.Now;
-
-    // Añadimos el ticket a la base de datos
-    _context.Tickets.Add(ticket);
-
-    try
-    {
-        await _context.SaveChangesAsync();
-    }
-    catch (Exception ex)
-    {
-        return BadRequest($"Error al guardar el ticket: {ex.Message}");
-    }
-
-    return CreatedAtAction("GetTicket", new { id = ticket.TicketID }, ticket);
-}
 
     }
 }

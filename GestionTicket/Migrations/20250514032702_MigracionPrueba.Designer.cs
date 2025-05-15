@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionTicket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250508005708_Inicial1")]
-    partial class Inicial1
+    [Migration("20250514032702_MigracionPrueba")]
+    partial class MigracionPrueba
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,7 +103,7 @@ namespace GestionTicket.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Eliminado")
+                    b.Property<bool?>("Eliminado")
                         .HasColumnType("bit");
 
                     b.HasKey("CategoriaID");
@@ -167,9 +167,6 @@ namespace GestionTicket.Migrations
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UsuarioClienteID")
-                        .HasColumnType("int");
 
                     b.HasKey("TicketID");
 

@@ -100,7 +100,7 @@ namespace GestionTicket.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Eliminado")
+                    b.Property<bool?>("Eliminado")
                         .HasColumnType("bit");
 
                     b.HasKey("CategoriaID");
@@ -164,9 +164,6 @@ namespace GestionTicket.Migrations
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UsuarioClienteID")
-                        .HasColumnType("int");
 
                     b.HasKey("TicketID");
 
