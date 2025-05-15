@@ -2,9 +2,27 @@ window.onload = function() {
     obtenerCategoria();
 };
 
+const getToken = () => localStorage.getItem("token");
+
+console.log("Token:", getToken());
+
+const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+}); // Pong en una constante el header de autorizacion para no repetirlo en cada fetch
+
+
 function obtenerCategoria(){
-    fetch('http://localhost:5287/api/Categoria')
-    .then(response => response.json())
+    fetch('http://localhost:5287/api/Categoria', {
+        method: 'GET',
+        headers: authHeaders()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("No autorizado o error en el servidor");
+        }
+        return response.json();
+    })
     .then(data => mostrarCategorias(data))
     .catch(error => console.error('Error al obtener categorías:', error));
 }
@@ -73,10 +91,7 @@ function guardarCategoria() {
 
     fetch(url, {
         method: method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
+        headers: authHeaders(),
         body: JSON.stringify(bodyData)
     })
     .then(response => {
@@ -102,8 +117,16 @@ function guardarCategoria() {
 }
 
 const editarCategoria = (categoriaID) => {
-    fetch(`http://localhost:5287/api/Categoria/${categoriaID}`)
-        .then(response => response.json())
+    fetch(`http://localhost:5287/api/Categoria/${categoriaID}`, {
+        method: "GET",
+        headers: authHeaders()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("No autorizado o error al obtener la categoría.");
+        }
+        return response.json();
+    })
         .then(data => {
             document.getElementById('categoriaId').value = data.categoriaID;
             document.getElementById('descripcionCategoria').value = data.descripcion;
@@ -131,10 +154,7 @@ const cambiarEstadoCategoria = (categoriaID, nuevoEstado) => {
     if (confirm("¿Estás seguro de cambiar el estado de la categoría?")) {
         fetch(`http://localhost:5287/api/Categoria/Estado/${categoriaID}`, {
             method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers: authHeaders(),
             body: JSON.stringify({ eliminado: nuevoEstado })
         })
         .then(response => {
@@ -150,11 +170,17 @@ const cambiarEstadoCategoria = (categoriaID, nuevoEstado) => {
 
 const eliminarCategoria = (categoriaID) => {
     fetch(`http://localhost:5287/api/Categoria/${categoriaID}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: authHeaders()
     })
     .then(() => obtenerCategoria())
     .catch(error => console.error("No se puede eliminar la categoría.", error));
 };
+
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+}
 
 
 

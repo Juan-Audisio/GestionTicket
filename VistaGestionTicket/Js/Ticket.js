@@ -1,8 +1,25 @@
 window.onload = obtenerTickets();
 
+const getToken = () => localStorage.getItem("token");
+
+console.log("Token:", getToken()); // Consulto a cer si llega bien el token, sacarlo despues de las pruebas 
+
+const authHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${getToken()}`
+}); // Pong en una constante el header de autorizacion para no repetirlo en cada fetch
+
 function obtenerTickets(){
-    fetch('http://localhost:5287/api/Tickets')
-    .then(response => response.json())
+    fetch('http://localhost:5287/api/Tickets', {
+        method: 'GET',
+        headers: authHeaders()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("No autorizado o error en el servidor");
+        }
+        return response.json();
+    })
     .then(data => mostrarTickets(data)) 
     .catch(error => console.error('Error al obtener Tickets:', error));
 }
@@ -99,63 +116,35 @@ const llenarSelect = (idSelect, opciones) => {
 
 
 function guardarTicket() {
-    const id = document.getElementById('ticketID').value;
     const titulo = document.getElementById('tituloTicket').value;
     const descripcion = document.getElementById('descripcionTicket').value;
-    const categoria = document.getElementById('categoriaTicket').value;
+    const categoriaID = document.getElementById('categoriaTicket').value;
     const prioridad = document.getElementById('prioridadTicket').value;
     const estado = document.getElementById('estadoTicket').value;
 
     const ticket = {
+        ticketID: 0,
         titulo: titulo,
         descripcion: descripcion,
-        categoria: categoria,
-        prioridad: parseInt(prioridad),  // Convertir a entero si es necesario
-        estado: parseInt(estado), // Convertir a entero si es necesario
+        categoriaID: 1, 
+        prioridad: 1,
+        estado: 1,
+        fechaCreacion: '01/01/2025',
+        fechaCierre: '01/01/2025',
+        usuarioClienteID: 0
     };
 
-    let url = 'http://localhost:5287/api/Tickets';
-    let method = 'POST';
-
-    if (id) {
-        ticket.ticketID = parseInt(id);
-        url = `http://localhost:5287/api/Tickets/${id}`;
-        method = 'PUT';
-    }
-
-    fetch(url, {
-        method: method,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
+    fetch('http://localhost:5287/api/Tickets', {
+        method: 'POST',
+        headers: authHeaders(),
         body: JSON.stringify(ticket)
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Error ${response.status}: ${text}`);
-            });
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(() => {
-        // Limpiar formulario
-        document.getElementById('formCrearTicket').reset();
-        document.getElementById('ticketID').value = "";
-
-        // Ocultar modal
-        const modalElement = document.getElementById('ticketModalLabel');
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        modal.hide();
-
-        // Recargar listado de tickets
-        obtenerTickets();
+        alert('Ticket guardado exitosamente');
     })
     .catch(error => {
         console.error("Error al guardar el ticket:", error);
-        alert("Error: " + error.message);
     });
-};
-
+}
 

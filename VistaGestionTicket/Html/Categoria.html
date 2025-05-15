@@ -7,23 +7,35 @@
     <link href="../lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Registrar categotia</h1>
+     <!-- NAVBAR LATERAL DERECHO -->
+     <div class="position-fixed end-0 top-0 vh-100 bg-dark text-white d-flex flex-column align-items-start p-3" style="width: 200px; z-index: 1050;">
+      <h5 class="mb-4">Menú</h5>
+      <a href="login.html" class="btn btn-outline-light w-100 mb-2">Login</a>
+      <a href="categoria.html" class="btn btn-outline-light w-100 mb-2">Categoría</a>
+      <a href="ticket.html" class="btn btn-outline-light w-100 mb-4">Ticket</a>
+      <button class="btn btn-danger w-100 mt-auto" onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
 
-    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#categoriaModalLabel">
-        Crear Nueva Categoría
+  <div class="container" style="margin-right: 220px;"> <!-- Mueve el contenido a la izquierda del navbar -->
+      <h1 class="mt-4">Registrar categoría</h1>
+
+      <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#categoriaModalLabel">
+          Crear Nueva Categoría
       </button>
-      
 
-    <table class="table table-hover">
-        <thead class="table table-dark table-striped">
-            <tr>
-                <th>Descripcion</th>
-                <th>Editar</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody></tbody> <!-- ACÁ -->
-    </table>
+      <table class="table table-hover">
+          <thead class="table-dark table-striped">
+              <tr>
+                  <th>Descripción</th>
+                  <th>Editar</th>
+                  <th>Estado</th>
+              </tr>
+          </thead>
+          <tbody></tbody>
+      </table>
+  </div>
+
+  
 
 
     <!-- MODAL DE BOOTSTRAP -->
