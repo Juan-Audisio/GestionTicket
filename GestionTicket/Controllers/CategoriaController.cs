@@ -71,7 +71,6 @@ public class CategoriaController : ControllerBase
           
 
         existente.Descripcion = categoria.Descripcion;
-        // existente.Eliminado = categoria.Eliminado;
 
         
 

@@ -7,8 +7,8 @@ namespace GestionTicket.Models;
 public class Ticket
 {
     public int TicketID { get; set; }
-    public string Titulo { get; set; }
-    public string Descripcion { get; set; }
+    public string? Titulo { get; set; }
+    public string? Descripcion { get; set; }
     public Estado Estado { get; set; }
     public Prioridad Prioridad { get; set; }
     public DateTime FechaCreacion { get; set; }
@@ -16,7 +16,9 @@ public class Ticket
     // public int UsuarioClienteID { get; set; }
     public int CategoriaID { get; set; }
 
-    public virtual Categoria Categorias { get; set; }
+
+    public virtual Categoria? Categorias { get; set; }
+    public ICollection<HistorialTicket>? HistorialTickets { get; set;} 
 }
 
 public enum Estado
