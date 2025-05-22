@@ -72,95 +72,97 @@ namespace GestionTicket.Controllers
             return Ok(ticket);
         }
 
-        // Nuevo método para editar tickets - COLOCADO DENTRO DE LA CLASE
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditarTicket(int id, Ticket ticket)
+[HttpPut("{id}")]
+public async Task<IActionResult> EditarTicket(int id, Ticket ticket)
+{
+    if (id != ticket.TicketID)
+    {
+        return BadRequest("ID del ticket no coincide");
+    }
+
+    
+    var original = await _context.Tickets
+        .AsNoTracking()
+        .FirstOrDefaultAsync(t => t.TicketID == id);
+    
+    if (original == null)
+    {
+        return NotFound();
+    }
+
+    if (original.Titulo != ticket.Titulo)
+    {
+        var cambiotitulo = new HistorialTicket
         {
+            TicketID = id,
+            CampoModificado = "TITULO",
+            ValorAnterior = original.Titulo,
+            ValorNuevo = ticket.Titulo,
+            FechaCambio = DateTime.Now
+        };
+        _context.HistorialTicket.Add(cambiotitulo);
+    }
 
+    if (original.Descripcion != ticket.Descripcion)
+    {
+        var cambiodescripcion = new HistorialTicket
+        {
+            TicketID = id,
+            CampoModificado = "DESCRIPCION",
+            ValorAnterior = original.Descripcion,
+            ValorNuevo = ticket.Descripcion,
+            FechaCambio = DateTime.Now
+        };
+        _context.HistorialTicket.Add(cambiodescripcion);
+    }
 
-            
-            if (id != ticket.TicketID)
-            {
-                return BadRequest("ID del ticket no coincide");
-            }
+    if (original.CategoriaID != ticket.CategoriaID)
+    {
+        var cambiocategoria = new HistorialTicket
+        {
+            TicketID = id,
+            CampoModificado = "CATEGORIA",
+            ValorAnterior = original.CategoriaID.ToString(),
+            ValorNuevo = ticket.CategoriaID.ToString(),
+            FechaCambio = DateTime.Now
+        };
+        _context.HistorialTicket.Add(cambiocategoria);
+    }
 
+    if (original.Prioridad != ticket.Prioridad)
+    {
+        var cambioprioridad = new HistorialTicket
+        {
+            TicketID = id,
+            CampoModificado = "PRIORIDAD",
+            ValorAnterior = original.Prioridad.ToString(),
+            ValorNuevo = ticket.Prioridad.ToString(),
+            FechaCambio = DateTime.Now
+        };
+        _context.HistorialTicket.Add(cambioprioridad);
+    }
 
-            var original = await _context.Tickets.FindAsync(id);
+    // Ahora sí puedes marcar como Modified porque original no está siendo rastreada
+    _context.Entry(ticket).State = EntityState.Modified;
 
-            if (original.Titulo != ticket.Titulo){
-
-                var cambiotitulo = new HistorialTicket
-                    {
-                        TicketID = id,
-                        CampoModificado = "TITULO",
-                        ValorAnterior = original.Titulo,
-                        ValorNuevo = ticket.Titulo,
-                        FechaCambio = DateTime.Now
-                    };
-                _context.HistorialTicket.Add(cambiotitulo);
-                await _context.SaveChangesAsync();
-            }
-
-            if (original.Descripcion != ticket.Descripcion){
-                var cambiodescripcion = new HistorialTicket
-                    {
-                        TicketID = id,
-                        CampoModificado = "DESCRIPCION",
-                        ValorAnterior = original.Descripcion,
-                        ValorNuevo = ticket.Descripcion,
-                        FechaCambio = DateTime.Now
-                    };
-                _context.HistorialTicket.Add(cambiodescripcion);
-                await _context.SaveChangesAsync();
-            }
-            if (original.CategoriaID != ticket.CategoriaID){
-                var cambiocategoria = new HistorialTicket
-                    {
-                        TicketID = id,
-                        CampoModificado = "CATEGORIA",
-                        ValorAnterior = original.CategoriaID.ToString(),
-                        ValorNuevo = ticket.CategoriaID.ToString(),
-                        FechaCambio = DateTime.Now
-                    };
-                _context.HistorialTicket.Add(cambiocategoria);
-                await _context.SaveChangesAsync();
-            }
-            if (original.Prioridad != ticket.Prioridad){
-               var cambioprioridad = new HistorialTicket
-                    {
-                        TicketID = id,
-                        CampoModificado = "PRIORIDAD",
-                        ValorAnterior = original.Prioridad.ToString(),
-                        ValorNuevo = ticket.Prioridad.ToString(),
-                        FechaCambio = DateTime.Now
-                    };
-                _context.HistorialTicket.Add(cambioprioridad);
-                await _context.SaveChangesAsync();
-            }
-
-             
-                
-
-            _context.Entry(ticket).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TicketExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+    try
+    {
+        await _context.SaveChangesAsync();
+    }
+    catch (DbUpdateConcurrencyException)
+    {
+        if (!TicketExists(id))
+        {
+            return NotFound();
         }
+        else
+        {
+            throw;
+        }
+    }
+
+    return NoContent();
+}
 
         // Método auxiliar para verificar si existe un ticket - COLOCADO DENTRO DE LA CLASE
         private bool TicketExists(int id)

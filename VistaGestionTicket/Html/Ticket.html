@@ -21,7 +21,7 @@
 
     <h1>Gestion tickets</h1>
 
-    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#ticketModalLabel" onclick="cargarSelects();">
+    <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#crearTicketModal">
         Crear nuevo ticket
       </button>
 
@@ -37,7 +37,8 @@
                 <th>Fecha Creacion</th>
                 <!-- <th>Usuario</th> -->
                 <th>Estado</th>
-                <th>Editar</th>   
+                <th>Editar</th> 
+                <th>Buscar</th>  
             </tr>
         </thead>
         <tbody></tbody> <!-- ACÁ -->
@@ -45,7 +46,7 @@
 
 
         <!-- MODAL DE BOOTSTRAP -->
-        <div class="modal fade" id="ticketModalLabel" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+        <div class="modal fade" id="crearTicketModal" tabindex="-1" aria-labelledby="crearTicketModal" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <form id="formCrearTicket">
@@ -55,6 +56,9 @@
                   </div>
                   <div class="modal-body">
 
+                    <input type="hidden" id="modoFormulario" value="crear">
+                    <input type="hidden" id="ticketID">
+
                     <div class="mb-3">
                       <label for="tituloTicket" class="form-label">TiTulo</label>
                       <input type="text" class="form-control" id="tituloTicket" required>
@@ -63,17 +67,21 @@
                       <label for="descripcionTicket" class="form-label">Descripcion</label>
                       <input type="text" class="form-control" id="descripcionTicket" required>
                     </div>
-                    <select class="form-control" id="categoriaTicket" required>
-                      <option value="">- Seleccione una categoría -</option>
-                    </select>
+                    <div class="mb-3">
+                      <label for="descripcionTicket" class="form-label">Categoria</label>
+                      <select class="form-control" id="categoriaTicket" required>
+                        <option value="">- Seleccione una categoría -</option>
+                      </select>                    
+                    </div>
+                  
                     <div class="mb-3">
                       <div class="mb-3">
                         <label for="prioridadTicket" class="form-label">Prioridad</label>
-                        <select class="form-control" id="prioridadTicket" required></select>
-                      </div>
-                      <div class="mb-3">
-                        <label for="estadoTicket" class="form-label">Estado</label>
-                        <select class="form-control" id="estadoTicket" required></select>
+                        <select class="form-control" id="prioridadTicket" required>
+                          <option value="1">Alto</option>
+                          <option value="2">Medio</option>
+                          <option value="3">Bajo</option>
+                        </select>
                       </div>
                   <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Guardar</button>
@@ -84,7 +92,51 @@
             </div>
           </div>
 
+
+
+
+          <div class="modal fade" id="historialModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Historial de Cambios</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> <!-- CORREGIDO -->
+                </div>
+                <div class="modal-body">
+                  <table class="table table-bordered table-sm" id="tablaHistorial" width="100%" cellspacing="0">
+                    <thead>
+                      <tr>
+                        <th class="text-center" style="width: 150px;">Fecha</th>
+                        <th style="width: 150px;">Campo Modificado</th>
+                        <th>Valor Anterior</th>
+                        <th>Valor Nuevo</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaHistorial"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm" id="tablaTickets" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th class="text-center" style="width: 150px;">Fecha Alta</th>
+                <th>Título</th>
+                <th>Categoría</th>
+                <th class="text-center" style="width: 100px;">Prioridad</th>
+                <th class="text-center" style="width: 100px;">Estado</th>
+                <th style="width: 110px;" class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
     <script src="../Js/Ticket.js"></script>
+    <script src="../lib/jquery/dist/jquery.min.js"></script>
     <script src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
