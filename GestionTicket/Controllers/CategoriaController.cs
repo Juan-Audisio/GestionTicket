@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using GestionTicket.Models;
+using System.Security.Claims;
 
 namespace GestionTicket.Controllers
 {
@@ -44,7 +45,16 @@ public class CategoriaController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> Crear([FromBody] Categoria categoria)
-    {
+    {   
+        var usuarioLogueadoId = HttpContext.User.Identity.Name;
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("No se pudo identificar al usuario.");
+            }
+            categoria.UsuarioClienteID = userId; // Asegurar que se establece el usuario
 
         var existeCategoria = await _context.Categorias
             .AnyAsync(c => c.Descripcion.ToLower() == categoria.Descripcion.ToLower());

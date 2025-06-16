@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionTicket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250522211758_Clientes")]
+    partial class Clientes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,9 +106,6 @@ namespace GestionTicket.Migrations
                     b.Property<bool?>("Eliminado")
                         .HasColumnType("bit");
 
-                    b.Property<string>("UsuarioClienteID")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("CategoriaID");
 
                     b.ToTable("Categorias");
@@ -119,10 +119,7 @@ namespace GestionTicket.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClienteID"));
 
-                    b.Property<string>("DNI")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("Eliminado")
+                    b.Property<bool>("Eliminado")
                         .HasColumnType("bit");
 
                     b.Property<string>("Email")
@@ -132,12 +129,6 @@ namespace GestionTicket.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Observaciones")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Telefono")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UsuarioClienteID")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ClienteID");
@@ -228,9 +219,6 @@ namespace GestionTicket.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Titulo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UsuarioClienteID")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TicketID");

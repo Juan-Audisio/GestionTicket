@@ -59,8 +59,10 @@ public class HomeController : ControllerBase
             //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Role, "ADMIN"),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING

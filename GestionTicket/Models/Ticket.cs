@@ -13,7 +13,7 @@ public class Ticket
     public Prioridad Prioridad { get; set; }
     public DateTime FechaCreacion { get; set; }
     public DateTime FechaCierre { get; set; }
-    // public int UsuarioClienteID { get; set; }
+    public string? UsuarioClienteID { get; set; }
     public int CategoriaID { get; set; }
 
 
@@ -48,8 +48,17 @@ public class TicketVista
     public DateTime FechaCreacion { get; set; }    
     public string FechaCreacionString => FechaCreacion.ToString("yyyy-MM-dd");
     public DateTime? FechaCierre { get; set; }
-    public int UsuarioClienteID { get; set; }
+    public int? UsuarioClienteID { get; set; }
 
     public int CategoriaID { get; set; }
     public string CategoriaDescripcion { get; set; }
+}
+
+public class TicketFiltroDTO
+{
+    public int CategoriaID { get; set; }
+    public int Prioridad { get; set; }
+    public int Estado { get; set; }
+    public DateTime? FechaDesde { get; set; }
+    public DateTime? FechaHasta { get; set; }
 }
