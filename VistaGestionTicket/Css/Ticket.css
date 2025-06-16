@@ -1,0 +1,123 @@
+
+body {
+    padding-top: 70px; /* Compensa el navbar fijo */
+    font-family: 'Poppins', sans-serif; /* Fuente moderna */
+    margin: 10px;
+    overflow-x: hidden;
+    font-size: .875rem;
+    background: rgb(27, 66, 71);
+    color: #ffffff;
+}
+  
+  .navbar-brand i {
+    font-size: 1.2rem;
+  }
+
+.table {
+    color: #ffffff;
+}
+
+thead {
+    background-color: #0412218d; /* tono oscuro */
+    color: #6c727a;            /* texto blanco */
+    font-weight: bold;
+    font-size: 1.25rem;        /* Tamaño más grande */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente legible y moderna */
+    border-radius: 20%;
+}
+/* 
+/* Fuente moderna 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap'); */
+
+
+/* Estilo general del modal */
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+    border: none;
+}
+
+.modal-body label {
+    color: #000000; /* o un gris oscuro para mejor visibilidad */
+}
+
+/* Encabezado del modal */
+.modal-header {
+    background: linear-gradient(to right, #1f2937, #111827);
+    color: white;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+/* Título */
+.modal-title {
+    font-weight: 600;
+}
+
+/* Botón de cerrar */
+.btn-close {
+    filter: invert(1);
+}
+
+/* Cuerpo del modal */
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Inputs modernos */
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    font-size: 0.95rem;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+.modal-body input:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
+    border-color: #6366f1;
+    outline: none;
+}
+
+/* Footer y botones */
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: none;
+    display: flex;
+    justify-content: end;
+    gap: 0.5rem;
+}
+
+.btn-guardar {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-guardar:hover {
+    background-color: #4338ca;
+}
+
+.btn-cancelar {
+    background-color: #e5e7eb;
+    color: #111827;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-cancelar:hover {
+    background-color: #d1d5db;
+}
+

@@ -43,20 +43,20 @@ function mostrarCategorias(data) {
         const eliminar = document.createElement('button');
         eliminar.textContent = "Eliminar";
         eliminar.setAttribute('onclick',`eliminarCategoria(${element.categoriaID})`);
-        eliminar.setAttribute('class', `btn btn-danger`);
+        eliminar.setAttribute('class', "btn btn-outline-warning dropdown-toggle");
         
         
         const editar = document.createElement('button');
         editar.textContent = "Editar";
         editar.setAttribute('onclick', `editarCategoria(${element.categoriaID})`);
-        editar.setAttribute('class', `btn btn-success`);
+        editar.setAttribute('class', `btn btn-outline-success`);
 
         const tdEditar = tr.insertCell(1);
         tdEditar.appendChild(editar)
 
         const btnEstado = document.createElement('button');
         btnEstado.textContent = element.eliminado ? "Activar" : "Desactivar";
-        btnEstado.className = element.eliminado ? "btn btn-warning" : "btn btn-danger";
+        btnEstado.className = element.eliminado ? "btn btn-outline-warning" : "btn btn-outline-danger";
         btnEstado.setAttribute('onclick', `cambiarEstadoCategoria(${element.categoriaID}, ${!element.eliminado})`);
 
         const tdEstado = tr.insertCell(2);
@@ -104,7 +104,12 @@ function guardarCategoria() {
         return response.json();
     })
     .then(data => {
-        alert("Categoría guardada correctamente.");
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: 'Categoría guardada correctamente.',
+            confirmButtonText: 'OK'
+          });
         // Limpiar campos
         document.getElementById('descripcionCategoria').value = "";
         document.getElementById('categoriaId').value = "";
@@ -112,7 +117,12 @@ function guardarCategoria() {
         obtenerCategoria();
     })
     .catch(error => {
-        alert("Ocurrió un error: " + error.message);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error: ' + error.message,
+            confirmButtonText: 'OK'
+          });
     });
 }
 

@@ -16,7 +16,12 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     });
 
     const result = await response.text();
-    alert(result);
+    Swal.fire({
+    icon: 'info',
+    title: 'Resultado',
+    text: result,
+    confirmButtonText: 'OK'
+    });
 
     if (response.ok) {
         console.log("Token guardado:", result.token);

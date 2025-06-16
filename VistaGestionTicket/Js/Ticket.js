@@ -18,6 +18,7 @@ function obtenerCategoria(){
         return response.json();
     })
     .then(data => comboCategorias(data))
+    .then(data => buscadorCategoria(data))
     .catch(error => console.error('Error al obtener categorías:', error));
 }
 
@@ -93,7 +94,7 @@ function mostrarTickets (data) {
         const editar = document.createElement('button');
         editar.textContent = "Editar";
         editar.setAttribute('onclick', `editarTickets(${element.ticketID})`);
-        editar.setAttribute('class', `btn btn-success`);
+        editar.setAttribute('class', `btn btn-outline-success`);
 
         const tdEditar = tr.insertCell(6);
         tdEditar.appendChild(editar)
@@ -102,7 +103,7 @@ function mostrarTickets (data) {
         const historialTicket = document.createElement('button');
         historialTicket.textContent ="Buscar";
         historialTicket.setAttribute('onclick', `buscarHistorial(${element.ticketID})`);
-        editar.setAttribute('class', `btn btn-success`);
+        historialTicket.setAttribute('class', `btn btn-outline-warning`);
 
         const tdhistorialTicket = tr.insertCell(7);
         tdhistorialTicket.appendChild(historialTicket)
@@ -136,6 +137,7 @@ function guardarTicket() {
     const categoriaID = parseInt(document.getElementById('categoriaTicket').value);
     const prioridad = parseInt(document.getElementById('prioridadTicket').value);
 
+    
     if (!titulo || !descripcion || !categoriaID || !prioridad) {
         alert("Todos los campos son obligatorios");
         return;
@@ -224,7 +226,6 @@ function editarTickets(ticketID) {
     });
 }
 
-
 function buscarHistorial(ticketID) {
     const getToken = () => localStorage.getItem("token");
     const authHeaders = () => ({
@@ -232,7 +233,7 @@ function buscarHistorial(ticketID) {
         "Authorization": `Bearer ${getToken()}`
     });
 
-    console.log("Token:", getToken());
+    
     
     fetch(`http://localhost:5287/api/historial/${ticketID}`, {
         method: 'GET',
@@ -246,44 +247,150 @@ function buscarHistorial(ticketID) {
         return response.json();
     })
     .then(data => {
+        console.log("Token:", getToken());
         console.log("Historial recibido:", data);
+        
         const tbody = document.querySelector("#tablaHistorial tbody");
-        tbody.innerHTML = ''; 
-
+        tbody.innerHTML = "";
+        
         data.forEach(tic => {
-            const tr = tbody.insertRow();
-
-            // Fecha de cambio
-            const fechaCambio = document.createTextNode(tic.fechaCambio);
-            const tdFechaCambio = tr.insertCell(0);
-            tdFechaCambio.classList.add("text-center");
-            tdFechaCambio.appendChild(fechaCambio);
-
-            // Campo modificado
-            const campoModificado = document.createTextNode(tic.campoModificado);
-            const tdCampoModificado = tr.insertCell(1);
-            tdCampoModificado.classList.add("text-bold");
-            tdCampoModificado.appendChild(campoModificado);
-
-            // Valor anterior
-            const valorAnterior = document.createTextNode(tic.valorAnterior);
-            const tdValorAnterior = tr.insertCell(2);
-            tdValorAnterior.appendChild(valorAnterior);
-
-            // Valor nuevo
-            const valorNuevo = document.createTextNode(tic.valorNuevo);
-            const tdValorNuevo = tr.insertCell(3);
-            tdValorNuevo.appendChild(valorNuevo);
+            const row = document.createElement("tr");
+    
+            row.innerHTML = `
+                <td class="text-center">${tic.fechaCambio}</td>
+                <td class='text-bold'>${tic.campoModificado}</td>
+                <td>${tic.valorAnterior}</td>
+                <td>${tic.valorNuevo}</td>
+            `;
+            tbody.appendChild(row);
         });
 
-         //$("#historialModal").modal
-         var modal = new bootstrap.Modal(document.getElementById('historialModal'));
-            modal.show();
-
-        // Mostrar modal después de cargar los datos
-        // $("#historialModal").modal("show");
+        getTickets()
+    
+        $("#historialModal").modal("show");
     })
     .catch(error => {
         console.error("Error al obtener historial:", error);
     });
 }
+
+
+document.getElementById("CategoriaIDBuscar").onchange = function () {
+    getTickets();
+};
+document.getElementById("prioridadBuscar").onchange = function () {
+    getTickets();
+};
+document.getElementById("estadoBuscar").onchange = function () {
+    getTickets();
+};
+
+document.getElementById("FechaDesdeBuscar").onchange = function () {
+    getTickets();
+};
+
+document.getElementById("FechaHastaBuscar").onchange = function () {
+    getTickets();
+};
+
+
+async function buscadorCategoria() {
+
+    const getToken = () => localStorage.getItem("token");
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`
+    });
+    const response = await fetch(`http://localhost:5287/api/Categoria`, {
+        method: 'GET',
+        headers: authHeaders()
+    });
+
+    if (!response.ok) {
+        throw new Error('Error al obtener categorías');
+    }
+
+    const categorias = await response.json();
+    const comboSelectBuscar = document.getElementById('CategoriaIDBuscar');
+
+    comboSelectBuscar.innerHTML = "";
+    let opcionesBuscar = `<option value="0">[Todas las categorías]</option>`;
+
+    categorias.forEach(cat => {
+        opcionesBuscar += `<option value="${cat.categoriaID}">${cat.descripcion}</option>`;
+    });
+
+    comboSelectBuscar.innerHTML = opcionesBuscar;
+    
+}
+
+async function getTickets() {
+    const getToken = () => localStorage.getItem("token");
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken()}`
+    });
+
+    try {
+        const categoriaIDBuscar = parseInt(document.getElementById("CategoriaIDBuscar").value);
+        const prioridadBuscar = parseInt(document.getElementById("prioridadBuscar").value);
+        const estadoBuscar = parseInt(document.getElementById("estadoBuscar").value);
+        const fechaDesde = document.getElementById("FechaDesdeBuscar").value;
+        const fechaHasta= document.getElementById("FechaHastaBuscar").value;
+        const filtros = { 
+            CategoriaID: categoriaIDBuscar,
+            Prioridad: prioridadBuscar,
+            Estado: estadoBuscar,
+            FechaDesde: fechaDesde,
+            FechaHasta: fechaHasta
+         };
+        
+        const response = await fetch("http://localhost:5287/api/Tickets/filtrar", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...authHeaders()
+            },
+            
+            body: JSON.stringify(filtros)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error al obtener tickets: ${response.status} - ${errorText}`);
+        }
+
+        const tickets = await response.json();
+        const tbody = document.querySelector("tbody");
+
+        if (!tbody) {
+            alert("Error: No se encontró la tabla para mostrar los tickets");
+            return;
+        }
+
+        tbody.innerHTML = "";
+        tickets.forEach(tic => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td class="text-center">${tic.titulo}</td>
+                <td class='text-bold'>${tic.descripcion}</td>
+                <td>${tic.categoriaDescripcion}</td>
+                <td class="text-center text-bold">${tic.prioridad}</td>
+                <td class="text-center text-bold">${tic.fechaCreacion}</td>
+                <td class="text-center text-bold">${tic.estado}</td>
+                <td class="text-center"><button class="btn btn-outline-success" onclick="prepararEdicion(${tic.ticketID})">Editar</button></td>
+                <td class="text-center"><button class="btn btn-outline-warning" onclick="buscarHistorial(${tic.ticketID})">Buscar</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error en getTickets:", error);
+    }
+}
+
+function cerrarSesion() {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+}
+
