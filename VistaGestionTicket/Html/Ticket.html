@@ -36,6 +36,11 @@
             <i class="bi bi-ticket-detailed-fill me-1"></i> Ticket
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Usuario.html">
+            <i class="bi bi-person-gear me-1"></i> Ajustes Usuario
+          </a>
+        </li>
       </ul>
 
       <button class="btn btn-outline-light ms-auto" onclick="cerrarSesion()">
@@ -160,32 +165,32 @@
             </div>
           </div>
 
-
-
-
-          <div class="modal fade" id="historialModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div  role="document">
-              <div >
-                <div >
-                  <h5 >Historial de Cambios</h5>
-                  <button type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div >
-                  <table  id="tablaHistorial" width="100%" cellspacing="0">
-                    <thead>
-                      <tr>
-                        <th  style="width: 150px;">Fecha</th>
-                        <th style="width: 150px;">Campo Modificado</th>
-                        <th>Valor Anterior</th>
-                        <th>Valor Nuevo</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
+<!-- Modal Historial -->
+<div class="modal fade" id="historialModal" tabindex="-1" aria-labelledby="historialModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="historialModalLabel">Historial de Cambios</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table" id="tablaHistorial" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th style="width: 150px;">Fecha</th>
+              <th style="width: 150px;">Campo Modificado</th>
+              <th>Valor Anterior</th>
+              <th>Valor Nuevo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Aquí se cargan las filas -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="../lib/jquery/dist/jquery.min.js"></script>
 <script src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>

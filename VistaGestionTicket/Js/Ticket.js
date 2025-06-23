@@ -226,53 +226,60 @@ function editarTickets(ticketID) {
     });
 }
 
-function buscarHistorial(ticketID) {
+async function buscarHistorial(ticketID) {
     const getToken = () => localStorage.getItem("token");
     const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getToken()}`
     });
-
-    
-    
-    fetch(`http://localhost:5287/api/historial/${ticketID}`, {
+  
+    try {
+      const response = await fetch(`http://localhost:5287/api/historial/${ticketID}`, {
         method: 'GET',
         headers: authHeaders()
-    })
-    
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("No se pudo obtener el historial");
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Token:", getToken());
-        console.log("Historial recibido:", data);
-        
-        const tbody = document.querySelector("#tablaHistorial tbody");
-        tbody.innerHTML = "";
-        
+      });
+  
+      if (!response.ok) {
+        throw new Error("No se pudo obtener el historial");
+      }
+  
+      const data = await response.json();
+  
+      // Buscar tbody de la tabla historial
+      const tbody = document.querySelector("#tablaHistorial tbody");
+      if (!tbody) {
+        console.error("No se encontró el tbody de la tabla de historial");
+        return;
+      }
+  
+      tbody.innerHTML = ""; // Limpia filas anteriores
+  
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center">No hay historial para este ticket.</td></tr>`;
+      } else {
         data.forEach(tic => {
-            const row = document.createElement("tr");
-    
-            row.innerHTML = `
-                <td class="text-center">${tic.fechaCambio}</td>
-                <td class='text-bold'>${tic.campoModificado}</td>
-                <td>${tic.valorAnterior}</td>
-                <td>${tic.valorNuevo}</td>
-            `;
-            tbody.appendChild(row);
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td class="text-center">${tic.fechaCambio}</td>
+            <td class="text-bold">${tic.campoModificado}</td>
+            <td>${tic.valorAnterior}</td>
+            <td>${tic.valorNuevo}</td>
+          `;
+          tbody.appendChild(row);
         });
-
-        getTickets()
-    
-        $("#historialModal").modal("show");
-    })
-    .catch(error => {
-        console.error("Error al obtener historial:", error);
-    });
-}
+      }
+  
+      // Mostrar modal
+      const modalElement = document.getElementById("historialModal");
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+  
+    } catch (error) {
+      console.error("Error al obtener historial:", error);
+      alert("Error al obtener historial. Revisa la consola para más detalles.");
+    }
+  }
+  
 
 
 document.getElementById("CategoriaIDBuscar").onchange = function () {
@@ -341,8 +348,8 @@ async function getTickets() {
             CategoriaID: categoriaIDBuscar,
             Prioridad: prioridadBuscar,
             Estado: estadoBuscar,
-            FechaDesde: fechaDesde,
-            FechaHasta: fechaHasta
+            FechaDesde: fechaDesde ? fechaDesde : null,
+            FechaHasta: fechaHasta ? fechaHasta : null
          };
         
         const response = await fetch("http://localhost:5287/api/Tickets/filtrar", {

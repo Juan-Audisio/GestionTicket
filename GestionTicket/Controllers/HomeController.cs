@@ -41,7 +41,7 @@ public class HomeController : ControllerBase
         };
 
         //HACEMOS USO DEL MÉTODO REGISTRAR USUARIO
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var result = await _userManager.CreateAsync(user, "Ezpeleta2025");
 
         if (result.Succeeded)
             return Ok("Usuario registrado");
@@ -49,6 +49,71 @@ public class HomeController : ControllerBase
         return BadRequest(result.Errors);
     }
 
+    [HttpGet("usuario-logueado")]
+public async Task<IActionResult> ObtenerUsuarioLogueado()
+{
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    if (string.IsNullOrEmpty(userId))
+        return Unauthorized("Usuario no identificado.");
+
+    var user = await _userManager.FindByIdAsync(userId);
+
+    if (user == null)
+        return NotFound("Usuario no encontrado.");
+
+    return Ok(new
+    {
+        email = user.Email,
+        nombreCompleto = user.NombreCompleto
+    });
+}
+
+[HttpPut("editar-usuario")]
+public async Task<IActionResult> EditarUsuario([FromBody] EditarUsuarioModel model)
+{
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var usuario = await _userManager.FindByIdAsync(userId);
+
+    if (usuario == null)
+        return NotFound("Usuario no encontrado");
+
+    // Actualiza el nombre completo
+    usuario.NombreCompleto = model.NombreCompleto;
+
+    // Si se quiere cambiar la contraseña
+    if (!string.IsNullOrEmpty(model.PasswordActual) && !string.IsNullOrEmpty(model.PasswordNueva))
+    {
+        // Validar que las contraseñas nuevas coincidan
+        if (model.PasswordNueva != model.RepetirPassword)
+        {
+            return BadRequest("La nueva contraseña y su confirmación no coinciden");
+        }
+
+        // Verificar la contraseña actual
+        var isCurrentPasswordValid = await _userManager.CheckPasswordAsync(usuario, model.PasswordActual);
+        if (!isCurrentPasswordValid)
+        {
+            return BadRequest("La contraseña actual es incorrecta");
+        }
+
+        // Cambiar la contraseña
+        var changePasswordResult = await _userManager.ChangePasswordAsync(usuario, model.PasswordActual, model.PasswordNueva);
+        if (!changePasswordResult.Succeeded)
+        {
+            return BadRequest(changePasswordResult.Errors);
+        }
+    }
+    else
+    {
+        // Solo actualizar el usuario sin cambiar contraseña
+        var updateResult = await _userManager.UpdateAsync(usuario);
+        if (!updateResult.Succeeded)
+            return BadRequest(updateResult.Errors);
+    }
+
+    return Ok("Usuario actualizado correctamente");
+}
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {

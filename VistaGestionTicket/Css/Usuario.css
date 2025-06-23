@@ -1,0 +1,44 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    padding-top: 70px; /* Compensa el navbar fijo */
+    font-family: 'Poppins', sans-serif; /* Fuente moderna */
+    margin: 10px;
+    overflow-x: hidden;
+    font-size: .875rem;
+    background: rgb(27, 66, 71);
+    color: #ffffff;
+}
+  
+
+.cardlogin{
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(228, 228, 228, 0.842);
+    padding: 20px 15px; 
+    width: 25vw;
+    height: 30vw; 
+    margin: auto;
+    margin-bottom: 25px;
+    border-radius: 25px;
+    backdrop-filter: blur(10px) brightness(1.2) saturate(150%);
+    position: absolute;
+    left: 10%;
+  
+  }
+
+  .titulologuin {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+}
+
+.tituloform{
+    color: white;
+}

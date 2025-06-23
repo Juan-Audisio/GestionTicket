@@ -23,7 +23,17 @@ namespace GestionTicket.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TicketVista>>> GetTickets()
         {
+
+             // Obtenemos el ID del usuario autenticado desde el token JWT
+            var userId = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("No se pudo identificar al usuario.");
+            }
+
             var tickets = await _context.Tickets
+                .Where(t => t.UsuarioClienteID == userId)
                 .Include(t => t.Categorias)
                 .Select(t => new TicketVista
                 {

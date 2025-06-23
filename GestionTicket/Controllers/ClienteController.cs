@@ -21,6 +21,7 @@ namespace GestionTicket.Controllers
     {
         _context = context;
     }
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes([FromQuery] Cliente cliente)
     {
@@ -72,7 +73,7 @@ namespace GestionTicket.Controllers
 
         _context.Clientes.Add(cliente);
         await _context.SaveChangesAsync();
-        return CreatedAtAction("Obtener", new { id = cliente.TicketID }, cliente);
+        return CreatedAtAction("Obtener", new { id = cliente});
     }
 
     [HttpPut("{id}")]
