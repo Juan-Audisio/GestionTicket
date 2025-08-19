@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionTicket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250703215032_puestocategoria1")]
+    partial class puestocategoria1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,8 +197,8 @@ namespace GestionTicket.Migrations
                     b.Property<string>("Observaciones")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PuestoLaboralID")
-                        .HasColumnType("int");
+                    b.Property<string>("PuestoLaboralID")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")
                         .HasColumnType("nvarchar(max)");
@@ -204,8 +207,6 @@ namespace GestionTicket.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DesarrolladorID");
-
-                    b.HasIndex("PuestoLaboralID");
 
                     b.ToTable("Desarrolladores");
                 });
@@ -460,15 +461,6 @@ namespace GestionTicket.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("GestionTicket.Models.Desarrollador", b =>
-                {
-                    b.HasOne("GestionTicket.Models.PuestoLaboral", "PuestoLaborales")
-                        .WithMany()
-                        .HasForeignKey("PuestoLaboralID");
-
-                    b.Navigation("PuestoLaborales");
                 });
 
             modelBuilder.Entity("GestionTicket.Models.HistorialTicket", b =>

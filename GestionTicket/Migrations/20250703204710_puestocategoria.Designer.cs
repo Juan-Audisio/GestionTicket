@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionTicket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250703204710_puestocategoria")]
+    partial class puestocategoria
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,8 +197,8 @@ namespace GestionTicket.Migrations
                     b.Property<string>("Observaciones")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PuestoLaboralID")
-                        .HasColumnType("int");
+                    b.Property<string>("PuestoLaboralID")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Telefono")
                         .HasColumnType("nvarchar(max)");
@@ -204,8 +207,6 @@ namespace GestionTicket.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DesarrolladorID");
-
-                    b.HasIndex("PuestoLaboralID");
 
                     b.ToTable("Desarrolladores");
                 });
@@ -258,10 +259,6 @@ namespace GestionTicket.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("PuestoCategoriaID");
-
-                    b.HasIndex("CategoriaID");
-
-                    b.HasIndex("PuestoLaboralID");
 
                     b.ToTable("PuestoCategorias");
                 });
@@ -462,15 +459,6 @@ namespace GestionTicket.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("GestionTicket.Models.Desarrollador", b =>
-                {
-                    b.HasOne("GestionTicket.Models.PuestoLaboral", "PuestoLaborales")
-                        .WithMany()
-                        .HasForeignKey("PuestoLaboralID");
-
-                    b.Navigation("PuestoLaborales");
-                });
-
             modelBuilder.Entity("GestionTicket.Models.HistorialTicket", b =>
                 {
                     b.HasOne("GestionTicket.Models.Ticket", "Tickets")
@@ -480,25 +468,6 @@ namespace GestionTicket.Migrations
                         .IsRequired();
 
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("GestionTicket.Models.PuestoCategoria", b =>
-                {
-                    b.HasOne("GestionTicket.Models.Categoria", "Categorias")
-                        .WithMany("PuestoCategorias")
-                        .HasForeignKey("CategoriaID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GestionTicket.Models.PuestoLaboral", "PuestoLaborales")
-                        .WithMany("PuestoCategorias")
-                        .HasForeignKey("PuestoLaboralID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Categorias");
-
-                    b.Navigation("PuestoLaborales");
                 });
 
             modelBuilder.Entity("GestionTicket.Models.Ticket", b =>
@@ -571,14 +540,7 @@ namespace GestionTicket.Migrations
 
             modelBuilder.Entity("GestionTicket.Models.Categoria", b =>
                 {
-                    b.Navigation("PuestoCategorias");
-
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("GestionTicket.Models.PuestoLaboral", b =>
-                {
-                    b.Navigation("PuestoCategorias");
                 });
 
             modelBuilder.Entity("GestionTicket.Models.Ticket", b =>

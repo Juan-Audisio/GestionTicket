@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GestionTicket.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ using System.Security.Claims;
 
 namespace GestionTicket.Controllers
 {
-    [Authorize]
+
     [Route("api/[controller]")]
     [ApiController]
     public class TicketsController : ControllerBase
@@ -19,22 +20,58 @@ namespace GestionTicket.Controllers
         {
             _context = context;
         }
-
+        [Authorize(Roles = "ADMINISTRADOR,CLIENTE,DESARROLLADOR")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TicketVista>>> GetTickets()
         {
-
-             // Obtenemos el ID del usuario autenticado desde el token JWT
-            var userId = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            // Obtener información del usuario logueado
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            var userRole = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (string.IsNullOrEmpty(userId))
-            {
                 return Unauthorized("No se pudo identificar al usuario.");
+
+            // Traer los tickets base
+            var query = _context.Tickets
+                                .Include(t => t.Categorias)
+                                .AsQueryable();
+
+            // Filtrar según rol
+            if (!string.Equals(userRole, "ADMINISTRADOR", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.Equals(userRole, "CLIENTE", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Cliente ve solo sus tickets
+                    query = query.Where(t => t.UsuarioClienteID == userId);
+                }
+                else if (string.Equals(userRole, "DESARROLLADOR", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Desarrollador ve tickets según categorías de su puesto
+                    var desarrollador = await _context.Desarrolladores
+                                                    .Include(d => d.PuestoLaborales)
+                                                    .FirstOrDefaultAsync(d => d.UsuarioClienteID == userId);
+
+                    if (desarrollador != null && desarrollador.PuestoLaboralID.HasValue)
+                    {
+                        var categoriaIds = await _context.PuestoCategorias
+                                                        .Where(pc => pc.PuestoLaboralID == desarrollador.PuestoLaboralID.Value)
+                                                        .Select(pc => pc.CategoriaID)
+                                                        .ToListAsync();
+
+                        query = query.Where(t => categoriaIds.Contains(t.CategoriaID));
+                    }
+                    else
+                    {
+                        // Si no tiene puesto asignado, no ve ningún ticket
+                        query = query.Where(t => false);
+                    }
+                }
             }
 
-            var tickets = await _context.Tickets
-                .Where(t => t.UsuarioClienteID == userId)
-                .Include(t => t.Categorias)
+            // Ejecutar query y proyectar a vista
+            var tickets = await query
+                .OrderBy(t => t.FechaCreacion)
                 .Select(t => new TicketVista
                 {
                     TicketID = t.TicketID,
@@ -43,25 +80,40 @@ namespace GestionTicket.Controllers
                     Estado = t.Estado.ToString(),
                     Prioridad = t.Prioridad.ToString(),
                     FechaCreacion = t.FechaCreacion,
-                    // FechaCreacionString = t.FechaCreacion.ToString("dd/MM/yyyy"),
                     FechaCierre = t.FechaCierre,
                     CategoriaID = t.CategoriaID,
-                    CategoriaDescripcion = t.Categorias.Descripcion.ToString(),
+                    CategoriaDescripcion = t.Categorias.Descripcion
                 })
                 .ToListAsync();
 
             return Ok(tickets);
         }
-
+        [Authorize(Roles = "ADMINISTRADOR,CLIENTE,DESARROLLADOR")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Obtener(int id)
         {
-            var ticket = await _context.Tickets.FindAsync(id);
+             var ticket = await _context.Tickets
+                .Include(t => t.UsuarioCliente)
+                .FirstOrDefaultAsync(t => t.TicketID == id);
+
             if (ticket == null)
                 return NotFound();
-            return Ok(ticket);
-        }
 
+            return Ok(new
+            {
+                ticket.TicketID,
+                ticket.Titulo,
+                ticket.Descripcion,
+                ticket.CategoriaID,
+                ticket.Prioridad,
+                ticket.Estado,
+                ticket.FechaCreacion,
+                ticket.FechaCierre,
+                Email = ticket.UsuarioCliente?.Email
+                });
+                }
+
+        [Authorize(Roles = "ADMINISTRADOR,CLIENTE,DESARROLLADOR")]
         [HttpPost]
         public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
         {
@@ -76,7 +128,7 @@ namespace GestionTicket.Controllers
             // Seteo de valores por defecto
             ticket.Estado = Estado.Abierto;
             ticket.FechaCreacion = DateTime.Now;
-            ticket.UsuarioClienteID = userId; // Asegurar que se establece el usuario
+            ticket.UsuarioClienteID = userId;
 
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
@@ -84,9 +136,12 @@ namespace GestionTicket.Controllers
             return CreatedAtAction("Obtener", new { id = ticket.TicketID }, ticket);
         }
 
+        [Authorize(Roles = "ADMINISTRADOR,CLIENTE,DESARROLLADOR")]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditarTicket(int id, Ticket ticket)
         {
+            var emailUsuario = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+
             if (id != ticket.TicketID)
             {
                 return BadRequest("ID del ticket no coincide");
@@ -110,7 +165,8 @@ namespace GestionTicket.Controllers
                     CampoModificado = "TITULO",
                     ValorAnterior = original.Titulo,
                     ValorNuevo = ticket.Titulo,
-                    FechaCambio = DateTime.Now
+                    FechaCambio = DateTime.Now,
+                    UsuarioEmail = emailUsuario
                 };
                 _context.HistorialTicket.Add(cambiotitulo);
             }
@@ -123,7 +179,8 @@ namespace GestionTicket.Controllers
                     CampoModificado = "DESCRIPCION",
                     ValorAnterior = original.Descripcion,
                     ValorNuevo = ticket.Descripcion,
-                    FechaCambio = DateTime.Now
+                    FechaCambio = DateTime.Now,
+                    UsuarioEmail = emailUsuario
                 };
                 _context.HistorialTicket.Add(cambiodescripcion);
             }
@@ -136,7 +193,8 @@ namespace GestionTicket.Controllers
                     CampoModificado = "CATEGORIA",
                     ValorAnterior = original.CategoriaID.ToString(),
                     ValorNuevo = ticket.CategoriaID.ToString(),
-                    FechaCambio = DateTime.Now
+                    FechaCambio = DateTime.Now,
+                    UsuarioEmail = emailUsuario
                 };
                 _context.HistorialTicket.Add(cambiocategoria);
             }
@@ -149,10 +207,14 @@ namespace GestionTicket.Controllers
                     CampoModificado = "PRIORIDAD",
                     ValorAnterior = original.Prioridad.ToString(),
                     ValorNuevo = ticket.Prioridad.ToString(),
-                    FechaCambio = DateTime.Now
+                    FechaCambio = DateTime.Now,
+                    UsuarioEmail = emailUsuario
                 };
                 _context.HistorialTicket.Add(cambioprioridad);
             }
+
+            ticket.Estado = Estado.Abierto;
+            ticket.FechaCreacion = DateTime.Now;
 
             // Ahora sí puedes marcar como Modified porque original no está siendo rastreada
             _context.Entry(ticket).State = EntityState.Modified;
@@ -183,7 +245,7 @@ namespace GestionTicket.Controllers
         }
 
 
-
+       [Authorize(Roles = "ADMINISTRADOR,CLIENTE,DESARROLLADOR")]
        [HttpPost("filtrar")]
         public async Task<ActionResult<IEnumerable<TicketVista>>> FiltrarTickets([FromBody] TicketFiltroDTO filtro)
         {
@@ -199,6 +261,13 @@ namespace GestionTicket.Controllers
 
                 var vista = new List<TicketVista>();
                 var tickets = _context.Tickets.Include(t => t.Categorias).AsQueryable();
+
+                var userId = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized("No se pudo identificar al usuario.");
+                    
+                tickets = tickets.Where(t => t.UsuarioClienteID == userId);
 
                 Console.WriteLine($"Total tickets antes del filtro: {await tickets.CountAsync()}");
 

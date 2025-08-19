@@ -13,9 +13,10 @@ public class Ticket
     public Prioridad Prioridad { get; set; }
     public DateTime FechaCreacion { get; set; }
     public DateTime FechaCierre { get; set; }
-    public string? UsuarioClienteID { get; set; }
     public int CategoriaID { get; set; }
 
+    public string? UsuarioClienteID { get; set; }
+    public virtual ApplicationUser? UsuarioCliente { get; set; }
 
     public virtual Categoria? Categorias { get; set; }
     public ICollection<HistorialTicket>? HistorialTickets { get; set;} 
@@ -23,10 +24,10 @@ public class Ticket
 
 public enum Estado
 {
-   Abierto = 1,
-   EnProceso,
-   Cerrado,
-   Canselado 
+    Abierto = 1,
+    EnProceso,
+    Cerrado,
+    Canselado 
 }
 
 public enum Prioridad
@@ -48,7 +49,7 @@ public class TicketVista
     public DateTime FechaCreacion { get; set; }    
     public string FechaCreacionString => FechaCreacion.ToString("yyyy-MM-dd");
     public DateTime? FechaCierre { get; set; }
-    public int? UsuarioClienteID { get; set; }
+    public string UsuarioClienteID { get; set; }
 
     public int CategoriaID { get; set; }
     public string CategoriaDescripcion { get; set; }
@@ -56,7 +57,7 @@ public class TicketVista
 
 public class TicketFiltroDTO
 {
-    public int CategoriaID { get; set; }
+    public int? CategoriaID { get; set; }
     public int Prioridad { get; set; }
     public int Estado { get; set; }
     public DateTime? FechaDesde { get; set; }

@@ -14,17 +14,23 @@ using System.Text;
 
 public class HomeController : ControllerBase 
 {
+    private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _rolManager;
     private readonly IConfiguration _configuration;
 
     public HomeController(
+        ApplicationDbContext context,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> rolManager,
         IConfiguration configuration)
     {
+        _context = context;
         _userManager = userManager;
         _signInManager = signInManager;
+        _rolManager = rolManager;
         _configuration = configuration;
     }
 
@@ -32,6 +38,25 @@ public class HomeController : ControllerBase
 
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        //CREAR ROLES SI NO EXISTEN
+        var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").SingleOrDefault();
+        if (nombreRolCrearExiste == null)
+        {
+            var roleResult = await _rolManager.CreateAsync(new IdentityRole("ADMINISTRADOR"));
+        }
+
+        var clienteRolCrearExiste = _context.Roles.Where(r => r.Name == "CLIENTE").SingleOrDefault();
+        if (clienteRolCrearExiste == null)
+        {
+            var roleResult = await _rolManager.CreateAsync(new IdentityRole("CLIENTE"));
+        }
+
+        var desarrolladorCrearExiste =  _context.Roles.Where(r => r.Name == "DESARROLLADOR").SingleOrDefault();
+        if (desarrolladorCrearExiste == null)
+        {
+            var roleResult = await _rolManager.CreateAsync(new IdentityRole("DESARROLLADOR"));
+        }
+
         //ARMAMOS EL OBJETO COMPLETANDO LOS ATRIBUTOS COMPLETADOS POR EL USUARIO
         var user = new ApplicationUser
         {
@@ -41,100 +66,113 @@ public class HomeController : ControllerBase
         };
 
         //HACEMOS USO DEL MÉTODO REGISTRAR USUARIO
-        var result = await _userManager.CreateAsync(user, "Ezpeleta2025");
+        var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
+        {
+                await _userManager.AddToRoleAsync(user, "ADMINISTRADOR");
             return Ok("Usuario registrado");
+        }
 
         return BadRequest(result.Errors);
     }
 
     [HttpGet("usuario-logueado")]
-public async Task<IActionResult> ObtenerUsuarioLogueado()
-{
-    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-    if (string.IsNullOrEmpty(userId))
-        return Unauthorized("Usuario no identificado.");
-
-    var user = await _userManager.FindByIdAsync(userId);
-
-    if (user == null)
-        return NotFound("Usuario no encontrado.");
-
-    return Ok(new
+    public async Task<IActionResult> ObtenerUsuarioLogueado()
     {
-        email = user.Email,
-        nombreCompleto = user.NombreCompleto
-    });
-}
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-[HttpPut("editar-usuario")]
-public async Task<IActionResult> EditarUsuario([FromBody] EditarUsuarioModel model)
-{
-    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var usuario = await _userManager.FindByIdAsync(userId);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized("Usuario no identificado.");
 
-    if (usuario == null)
-        return NotFound("Usuario no encontrado");
+        var user = await _userManager.FindByIdAsync(userId);
 
-    // Actualiza el nombre completo
-    usuario.NombreCompleto = model.NombreCompleto;
+        if (user == null)
+            return NotFound("Usuario no encontrado.");
 
-    // Si se quiere cambiar la contraseña
-    if (!string.IsNullOrEmpty(model.PasswordActual) && !string.IsNullOrEmpty(model.PasswordNueva))
-    {
-        // Validar que las contraseñas nuevas coincidan
-        if (model.PasswordNueva != model.RepetirPassword)
+        return Ok(new
         {
-            return BadRequest("La nueva contraseña y su confirmación no coinciden");
-        }
-
-        // Verificar la contraseña actual
-        var isCurrentPasswordValid = await _userManager.CheckPasswordAsync(usuario, model.PasswordActual);
-        if (!isCurrentPasswordValid)
-        {
-            return BadRequest("La contraseña actual es incorrecta");
-        }
-
-        // Cambiar la contraseña
-        var changePasswordResult = await _userManager.ChangePasswordAsync(usuario, model.PasswordActual, model.PasswordNueva);
-        if (!changePasswordResult.Succeeded)
-        {
-            return BadRequest(changePasswordResult.Errors);
-        }
-    }
-    else
-    {
-        // Solo actualizar el usuario sin cambiar contraseña
-        var updateResult = await _userManager.UpdateAsync(usuario);
-        if (!updateResult.Succeeded)
-            return BadRequest(updateResult.Errors);
+            email = user.Email,
+            nombreCompleto = user.NombreCompleto
+        });
     }
 
-    return Ok("Usuario actualizado correctamente");
-}
-    [HttpPost("login")]
+    [HttpPut("editar-usuario")]
+    public async Task<IActionResult> EditarUsuario([FromBody] EditarUsuarioModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var usuario = await _userManager.FindByIdAsync(userId);
+
+        if (usuario == null)
+            return NotFound("Usuario no encontrado");
+
+        
+        usuario.NombreCompleto = model.NombreCompleto;
+
+        // Si se quiere cambiar la contraseña
+        if (!string.IsNullOrEmpty(model.PasswordActual) && !string.IsNullOrEmpty(model.PasswordNueva))
+        {
+            // Validar que las contraseñas nuevas coincidan
+            if (model.PasswordNueva != model.RepetirPassword)
+            {
+                return BadRequest("La nueva contraseña y su confirmación no coinciden");
+            }
+
+            // Verificar la contraseña actual
+            var constraseñaActualValida = await _userManager.CheckPasswordAsync(usuario, model.PasswordActual);
+            if (!constraseñaActualValida)
+            {
+                return BadRequest("La contraseña actual es incorrecta");
+            }
+
+            // Cambiar la contraseña
+            var guardarContrasena = await _userManager.ChangePasswordAsync(usuario, model.PasswordActual, model.PasswordNueva);
+            if (!guardarContrasena.Succeeded)
+            {
+                return BadRequest(guardarContrasena.Errors);
+            }
+        }
+        else
+        {
+            // Solo actualizar el usuario sin cambiar contraseña
+            var editarNombre = await _userManager.UpdateAsync(usuario);
+            if (!editarNombre.Succeeded)
+                return BadRequest(editarNombre.Errors);
+        }
+
+        return Ok("Usuario actualizado correctamente");
+    }
+
+   [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
         //BUSCAMOS EL USUARIO POR MEDIO DE EMAIL EN LA BASE DE DATOS
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
+            // Obtener el rol que tiene el usuario
+            string rolNombre = "CLIENTE";
+            var rolUsuario = _context.UserRoles.Where(r => r.UserId == user.Id).SingleOrDefault();
+            if (rolUsuario != null)
+            {
+                var rol = _context.Roles.Where(r => r.Id == rolUsuario.RoleId).SingleOrDefault();
+                if (rol != null)
+                    rolNombre = rol.Name;
+            }
+
+            // Generar claims
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, "ADMIN"),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, rolNombre), // usar el rol real
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            //ARMAMOS EL OBJETO CON LOS ATRIBUTOS PARA GENERAR EL TOKEN
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Issuer"],
@@ -145,9 +183,7 @@ public async Task<IActionResult> EditarUsuario([FromBody] EditarUsuarioModel mod
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            // GENERAMOS EL REFRESH TOKEN
             var refreshToken = GenerarRefreshToken();
-            //GUARDAMOS EN BASE DE DATOS EL REFRESH TOKEN
             await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", refreshToken);
 
             return Ok(new

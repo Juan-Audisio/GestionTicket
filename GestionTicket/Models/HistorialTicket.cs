@@ -13,6 +13,7 @@ public class HistorialTicket
     public string? ValorAnterior { get; set; }
     public string? ValorNuevo { get; set; }
     public DateTime FechaCambio { get; set; }
+    public string? UsuarioEmail { get; set; }
 
      public virtual Ticket? Tickets { get; set; }
 }
