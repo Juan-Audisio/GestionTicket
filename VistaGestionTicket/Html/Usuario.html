@@ -11,46 +11,57 @@
 </head>
 <body>
 
- <!-- Navbar superior moderno -->
+  <!-- Navbar superior moderno -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#">
-        <i class="bi bi-grid-fill me-2"></i> Menú
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSuperior">
-        <span class="navbar-toggler-icon"></span>
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">
+      <i class="bi bi-grid-fill me-2"></i> Menú
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSuperior">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSuperior">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="Cliente.html">
+            <i class="bi bi-person-fill me-1"></i> Cliente
+          </a>
+        </li>
+            <li class="nav-item">
+              <a class="nav-link" href="Desarrollador.html">
+                <i class="bi bi-person-fill me-1"></i> Desarrollador
+              </a>
+            </li>
+        <li class="nav-item">
+          <a class="nav-link" href="categoria.html">
+            <i class="bi bi-tags-fill me-1"></i> Categoría
+          </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="PuestoLaboral.html">
+              <i class="bi bi-tags-fill me-1"></i> Puesto Laboral
+            </a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="ticket.html">
+            <i class="bi bi-ticket-detailed-fill me-1"></i> Ticket
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="Usuario.html">
+            <i class="bi bi-person-gear me-1"></i> Ajustes Usuario
+          </a>
+        </li>
+      </ul>
+      
+
+      <button class="btn btn-outline-light ms-auto" onclick="cerrarSesion()">
+        <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
       </button>
-  
-      <div class="collapse navbar-collapse" id="navbarSuperior">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="Cliente.html">
-              <i class="bi bi-person-fill me-1"></i> Cliente
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="categoria.html">
-              <i class="bi bi-tags-fill me-1"></i> Categoría
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="ticket.html">
-              <i class="bi bi-ticket-detailed-fill me-1"></i> Ticket
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="Usuario.html">
-              <i class="bi bi-person-gear me-1"></i> Ajustes Usuario
-            </a>
-          </li>
-        </ul>
-  
-        <button class="btn btn-outline-light ms-auto" onclick="cerrarSesion()">
-          <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
-        </button>
-      </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
     <h2 class="tituloform">Ajustes de usuario</h2>
     <form id="usuariorForm" method="post">

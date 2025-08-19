@@ -17,25 +17,11 @@ function obtenerCategoria(){
         }
         return response.json();
     })
-    .then(data => comboCategorias(data))
-    .then(data => buscadorCategoria(data))
+    .then(data => {
+        comboCategorias();
+        obtenerTickets();
+    })
     .catch(error => console.error('Error al obtener categorías:', error));
-}
-
-function comboCategorias(data) {
-    const tbody = document.getElementById('categoriaTicket'); // Selecciona el tbody de tu tabla
-    tbody.innerHTML = ''; // Limpia el contenido previo
-    
-    let opciones = '';
-    data.forEach(element => {
-
-        opciones += `<option value="${element.categoriaID}">${element.descripcion}</option>`;
-
-        
-    });
-
-    tbody.innerHTML = opciones; 
-    obtenerTickets();
 }
 
 function obtenerTickets(){
@@ -59,6 +45,7 @@ function obtenerTickets(){
     .catch(error => console.error('Error al obtener Tickets:', error));
 }
 
+// esta ok
 function mostrarTickets (data) { 
     const tbody = document.querySelector('tbody');
     tbody.innerHTML = ''; 
@@ -110,6 +97,7 @@ function mostrarTickets (data) {
     });
 }
 
+// esta ok
 document.getElementById('formCrearTicket').addEventListener('submit', function (event) {
     event.preventDefault();
     guardarTicket();
@@ -129,6 +117,7 @@ const llenarSelect = (idSelect, opciones) => {
     });
 };
 
+// esta ok
 function guardarTicket() {
     const modo = document.getElementById('modoFormulario').value;
     const ticketID = document.getElementById('ticketID').value;
@@ -213,9 +202,8 @@ function editarTickets(ticketID) {
         document.getElementById('descripcionTicket').value = ticket.descripcion;
         document.getElementById('categoriaTicket').value = ticket.categoriaID;
         document.getElementById('prioridadTicket').value = ticket.prioridad;
-
+        document.getElementById('usuarioCliente').value = ticket.email;
         document.getElementById('modoFormulario').value = 'editar';
-
         // Mostrar el modal
         const modal = new bootstrap.Modal(document.getElementById('crearTicketModal'));
         modal.show();
@@ -264,12 +252,14 @@ async function buscarHistorial(ticketID) {
             <td class="text-bold">${tic.campoModificado}</td>
             <td>${tic.valorAnterior}</td>
             <td>${tic.valorNuevo}</td>
+            <td>${tic.usuarioEmail ?? "Desconocido"}</td>
+
           `;
           tbody.appendChild(row);
+          console.log(row)
         });
       }
   
-      // Mostrar modal
       const modalElement = document.getElementById("historialModal");
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
@@ -278,12 +268,12 @@ async function buscarHistorial(ticketID) {
       console.error("Error al obtener historial:", error);
       alert("Error al obtener historial. Revisa la consola para más detalles.");
     }
-  }
-  
+}
+
 
 
 document.getElementById("CategoriaIDBuscar").onchange = function () {
-    getTickets();
+    obtenerTickets();
 };
 document.getElementById("prioridadBuscar").onchange = function () {
     getTickets();
@@ -300,9 +290,8 @@ document.getElementById("FechaHastaBuscar").onchange = function () {
     getTickets();
 };
 
-
-async function buscadorCategoria() {
-
+// esta ok
+async function comboCategorias() {
     const getToken = () => localStorage.getItem("token");
     const authHeaders = () => ({
         "Content-Type": "application/json",
@@ -318,86 +307,94 @@ async function buscadorCategoria() {
     }
 
     const categorias = await response.json();
+    const comboSelect = document.getElementById('categoriaTicket');
     const comboSelectBuscar = document.getElementById('CategoriaIDBuscar');
+
+    comboSelect.innerHTML = "";
+    let opciones = `<option value="0">[Seleccione una categoría]</option>`;
 
     comboSelectBuscar.innerHTML = "";
     let opcionesBuscar = `<option value="0">[Todas las categorías]</option>`;
 
     categorias.forEach(cat => {
+        opciones += `<option value="${cat.categoriaID}">${cat.descripcion}</option>`;
         opcionesBuscar += `<option value="${cat.categoriaID}">${cat.descripcion}</option>`;
     });
-
+    comboSelect.innerHTML = opciones;
     comboSelectBuscar.innerHTML = opcionesBuscar;
     
 }
 
-async function getTickets() {
-    const getToken = () => localStorage.getItem("token");
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    });
 
-    try {
-        const categoriaIDBuscar = parseInt(document.getElementById("CategoriaIDBuscar").value);
-        const prioridadBuscar = parseInt(document.getElementById("prioridadBuscar").value);
-        const estadoBuscar = parseInt(document.getElementById("estadoBuscar").value);
-        const fechaDesde = document.getElementById("FechaDesdeBuscar").value;
-        const fechaHasta= document.getElementById("FechaHastaBuscar").value;
-        const filtros = { 
-            CategoriaID: categoriaIDBuscar,
-            Prioridad: prioridadBuscar,
-            Estado: estadoBuscar,
-            FechaDesde: fechaDesde ? fechaDesde : null,
-            FechaHasta: fechaHasta ? fechaHasta : null
-         };
-        
-        const response = await fetch("http://localhost:5287/api/Tickets/filtrar", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...authHeaders()
-            },
-            
-            body: JSON.stringify(filtros)
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error al obtener tickets: ${response.status} - ${errorText}`);
-        }
-
-        const tickets = await response.json();
-        const tbody = document.querySelector("tbody");
-
-        if (!tbody) {
-            alert("Error: No se encontró la tabla para mostrar los tickets");
-            return;
-        }
-
-        tbody.innerHTML = "";
-        tickets.forEach(tic => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td class="text-center">${tic.titulo}</td>
-                <td class='text-bold'>${tic.descripcion}</td>
-                <td>${tic.categoriaDescripcion}</td>
-                <td class="text-center text-bold">${tic.prioridad}</td>
-                <td class="text-center text-bold">${tic.fechaCreacion}</td>
-                <td class="text-center text-bold">${tic.estado}</td>
-                <td class="text-center"><button class="btn btn-outline-success" onclick="prepararEdicion(${tic.ticketID})">Editar</button></td>
-                <td class="text-center"><button class="btn btn-outline-warning" onclick="buscarHistorial(${tic.ticketID})">Buscar</button></td>
-            `;
-            tbody.appendChild(row);
-        });
-
-    } catch (error) {
-        console.error("Error en getTickets:", error);
-    }
-}
 
 function cerrarSesion() {
     localStorage.removeItem("token");
     window.location.href = "login.html";
 }
 
+// async function getTickets() {
+//     const getToken = () => localStorage.getItem("token");
+//     const authHeaders = () => ({
+//         "Content-Type": "application/json",
+//         "Authorization": `Bearer ${getToken()}`
+//     });
+
+//     try {
+//         const categoriaIDBuscar = parseInt(document.getElementById("CategoriaIDBuscar").value);
+//         const prioridadBuscar = parseInt(document.getElementById("prioridadBuscar").value);
+//         const estadoBuscar = parseInt(document.getElementById("estadoBuscar").value);
+//         const fechaDesde = document.getElementById("FechaDesdeBuscar").value;
+//         const fechaHasta= document.getElementById("FechaHastaBuscar").value;
+//         const filtros = { 
+//             CategoriaID: categoriaIDBuscar,
+//             Prioridad: prioridadBuscar,
+//             Estado: estadoBuscar,
+//             FechaDesde: fechaDesde ? fechaDesde : null,
+//             FechaHasta: fechaHasta ? fechaHasta : null
+//          };
+
+//         console.log(filtros);
+        
+//         const response = await fetch("http://localhost:5287/api/Tickets/filtrar", {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 ...authHeaders()
+//             },
+            
+//             body: JSON.stringify(filtros)
+//         });
+
+//         if (!response.ok) {
+//             const errorText = await response.text();
+//             throw new Error(`Error al obtener tickets: ${response.status} - ${errorText}`);
+//         }
+
+//         const tickets = await response.json();
+//         const tbody = document.querySelector("tbody");
+
+//         if (!tbody) {
+//             alert("Error: No se encontró la tabla para mostrar los tickets");
+//             return;
+//         }
+
+//         tbody.innerHTML = "";
+//         tickets.forEach(tic => {
+//             const row = document.createElement("tr");
+//             row.innerHTML = `
+//                 <td class="text-center">${tic.titulo}</td>
+//                 <td class='text-bold'>${tic.descripcion}</td>
+//                 <td>${tic.categoriaDescripcion}</td>
+//                 <td class="text-center text-bold">${tic.prioridad}</td>
+//                 <td class="text-center text-bold">${tic.fechaCreacion}</td>
+//                 <td class="text-center text-bold">${tic.estado}</td>
+//                 <td class="text-center"><button class="btn btn-outline-success" onclick="prepararEdicion(${tic.ticketID})">Editar</button></td>
+//                 <td class="text-center"><button class="btn btn-outline-warning" onclick="buscarHistorial(${tic.ticketID})">Buscar</button></td>
+//             `;
+//             tbody.appendChild(row);
+//         });
+
+//     } catch (error) {
+//         console.error("Error en getTickets:", error);
+//     }
+// }

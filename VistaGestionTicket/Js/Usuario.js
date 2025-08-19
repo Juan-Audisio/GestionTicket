@@ -1,5 +1,5 @@
 console.log("esta conectada")
-const apiBase = "http://localhost:5287/api/home"; //MEDIO DE CONEXION A LA API
+const apiBase = "http://localhost:5287/api/home";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const getToken = () => localStorage.getItem("token");

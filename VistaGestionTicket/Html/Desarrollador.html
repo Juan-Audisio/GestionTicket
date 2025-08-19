@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categoría</title>
+    <title>Desarrollador</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../Css/Cliente.css">
 </head>
 <body>
 
- <!-- Navbar superior moderno -->
- <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
+   <!-- Navbar superior moderno -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="#">
       <i class="bi bi-grid-fill me-2"></i> Menú
@@ -63,10 +63,10 @@
 </nav>
 
     <div class="container" style="margin-right: 220px;">
-        <h1 class="mt-4">Registrar Cliente</h1>
+        <h1 class="mt-4">Registrar Desarrolladores</h1>
   
-        <button type="button" class="btn btn-outline-secondary my-3" data-bs-toggle="modal" data-bs-target="#clienteModalLabel">
-            Crear Nuevo Cliente
+        <button type="button" class="btn btn-outline-secondary my-3" data-bs-toggle="modal" data-bs-target="#desarrolladorModalLabel">
+            Crear Nuevo Desarrollador
         </button>
   
         <table class="table table-hover">
@@ -76,6 +76,7 @@
                     <th>Email</th>
                     <th>DNI</th>
                     <th>Telefono</th>
+                    <th>Puesto Laboral</th>
                     <th>Observacion</th>
                     <th>Editar</th>
                     <th>Estado</th>
@@ -86,44 +87,50 @@
     </div>
 
     <!-- MODAL DE BOOTSTRAP -->
-    <div class="modal fade" id="clienteModalLabel" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="desarrolladorModalLabel" tabindex="-1" aria-labelledby="desarrolladorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
-            <form id="formCrearCliente">
+            <form id="formCreardesarrollador">
               <div class="modal-header">
-                <h5 class="modal-title" id="">Nueva Categoría</h5>
+                <h5 class="modal-title" id="">Nuevo Desarrollador</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
               </div>
               <div class="modal-body">
                 <div class="mb-3">
-                  <input type="hidden" id="clienteId">
+                  <input type="hidden" id="desarrolladorId">
                 </div>
                 <div class="mb-3">
-                  <label for="nombrecliente" class="form-label">Nombre</label>
-                  <input type="text" class="form-control" id="nombrecliente" required>
+                  <label for="nombredesarrollador" class="form-label">Nombre</label>
+                  <input type="text" class="form-control" id="nombredesarrollador" required>
                 </div>
                 <div class="mb-3">
-                  <label for="dnicliente" class="form-label">DNI</label>
-                  <input type="text" class="form-control" id="dnicliente" required
+                  <label for="dnidesarrollador" class="form-label">DNI</label>
+                  <input type="text" class="form-control" id="dnidesarrollador" required
                     pattern="[0-9]*" 
                     inputmode="numeric" 
                     maxlength="8"
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
               <div class="mb-3">
-                <label for="emailcliente" class="form-label">Email</label>
-                <input type="text" class="form-control" id="emailcliente">
+                <label for="emaildesarrollador" class="form-label">Email</label>
+                <input type="text" class="form-control" id="emaildesarrollador">
               </div>
             <div class="mb-3">
-                <label for="telefonocliente" class="form-label">Telefono</label>
-                <input type="text" class="form-control" id="telefonocliente">
+                <label for="telefonodesarrollador" class="form-label">Telefono</label>
+                <input type="text" class="form-control" id="telefonodesarrollador">
+              </div>
+              <div class="mb-3">
+                <label for="puestolaboralSelect" class="form-label">Puesto Laboral</label>
+                <select class="form-control" id="puestolaboralSelect" required>
+                  <option value="">- Seleccione Puesto Laboral -</option>
+                </select>                    
               </div>
             <div class="form-group">
                 <label for="exampleTextarea" class="form-label">Observacion</label>
-                <textarea class="form-control" id="observacioncliente" cols="5" rows="5"></textarea>
+                <textarea class="form-control" id="observaciondesarrollador" cols="5" rows="5"></textarea>
               </div>
               <div id="avisoEliminado" class="text-danger" style="display: none;">
-                Este cliente está eliminada. No se puede editar hasta restaurarla.
+                Este desarrollador está eliminada. No se puede editar hasta restaurarla.
               </div>
               <div class="modal-footer">
                 <button type="submit" class="btn btn-success">Guardar</button>
@@ -134,7 +141,7 @@
         </div>
       </div>
      
-    <script src="../Js/Cliente.js"></script>
+    <script src="../Js/Desarrollador.js"></script>
     <script src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
