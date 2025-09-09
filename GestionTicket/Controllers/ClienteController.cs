@@ -67,9 +67,14 @@ namespace GestionTicket.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(userId, "CLIENTE");
+
+                    cliente.UsuarioClienteID = userId.Id;
                 }
 
-                return CreatedAtAction("GetCliente", new { id = cliente.ClienteID }, cliente);
+                _context.Clientes.Add(cliente);
+                    await _context.SaveChangesAsync();
+
+                // return CreatedAtAction("GetCliente", new { id = cliente.ClienteID }, clienteusuario);
             }
             else
             {

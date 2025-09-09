@@ -67,7 +67,7 @@ namespace GestionTicket.Controllers
                         query = query.Where(t => false);
                     }
                 }
-            }
+            }   
 
             // Ejecutar query y proyectar a vista
             var tickets = await query
@@ -324,5 +324,52 @@ namespace GestionTicket.Controllers
                 return StatusCode(500, $"Error interno: {ex.Message}");
             }
         }
+        [Authorize(Roles = "ADMINISTRADOR")]
+        [HttpPost("obtenerTicketporCliente/{clienteId}")]
+        public async Task<ActionResult<IEnumerable<TicketVista>>> ObtenerTicketporCliente(string clienteId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(clienteId))
+                {
+                    return BadRequest("El ID del cliente no puede ser nulo o vacío.");
+                }
+
+                var tickets = await _context.Tickets
+                    .Include(t => t.Categorias)
+                    .Where(t => t.UsuarioClienteID == clienteId)
+                    .OrderByDescending(t => t.FechaCreacion)
+                    .ToListAsync();
+
+                if (tickets == null || tickets.Count == 0)
+                {
+                    return NotFound("No se encontraron tickets para el cliente especificado.");
+                }
+
+                var vista = tickets.Select(ticket => new TicketVista
+                {
+                    TicketID = ticket.TicketID,
+                    Titulo = ticket.Titulo,
+                    Descripcion = ticket.Descripcion,
+                    Estado = ticket.Estado.ToString(),
+                    Prioridad = ticket.Prioridad.ToString(),
+                    FechaCreacion = ticket.FechaCreacion,
+                    FechaCierre = ticket.FechaCierre,
+                    CategoriaID = ticket.CategoriaID,
+                    CategoriaDescripcion = ticket.Categorias?.Descripcion ?? "Sin categoría"
+                }).ToList();
+
+                return Ok(vista);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ObtenerTicketporCliente: {ex}");
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
+        }
+
+
+
+
     }
 }

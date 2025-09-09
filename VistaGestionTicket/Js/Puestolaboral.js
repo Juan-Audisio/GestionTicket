@@ -248,7 +248,7 @@ async function comboCategorias() {
         throw new Error('Error al obtener categorías');
     }
     const categorias = await response.json();
-    const comboSelect = document.getElementById('puestolaboralSelect');
+    const comboSelect = document.getElementById('selectCategoria');
     comboSelect.innerHTML = "";
     let opciones = `<option value="0">[Seleccione una categoría]</option>`;
     

@@ -27,9 +27,9 @@ namespace GestionTicket.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PuestoCategoria>>> GetPuestoCategorias([FromQuery] bool? eliminado)
         {
-            var puestoCategorias = _context.PuestoCategorias
-            .Include(pc => pc.PuestoLaborales) // Incluir los puestos laborales relacionados
-            .Include(c => c.Categorias) // Incluir la categoría relacionada
+            var puestoCategorias = await _context.PuestoCategorias
+            .Include(c => c.Categorias) 
+            .Include(pc => pc.PuestoLaborales) 
             .ToListAsync();
 
             return Ok(puestoCategorias);

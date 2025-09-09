@@ -1,8 +1,10 @@
-console.log("conectado")
-
 window.onload = function() {
     obtenerDesarrollador();
     ObtenerPuestoLaboralDropDown();
+};
+
+document.getElementById("puestolaboralIDBuscar").onchange = function () {
+    obtenerDesarrollador();
 };
 
 async function ObtenerPuestoLaboralDropDown() {
@@ -22,12 +24,18 @@ async function ObtenerPuestoLaboralDropDown() {
     const categorias = await response.json();
     const comboSelect = document.getElementById('puestolaboralSelect');
     comboSelect.innerHTML = "";
+    const comboSelectBuscar = document.getElementById('puestolaboralIDBuscar');
+    comboSelectBuscar.innerHTML = "";
+    let opcionesBuscar = `<option value="0">[Todos los puestos laborales]</option>`;
     let opciones = `<option value="0">[Seleccione un puesto laboral]</option>`;
+
     
     categorias.forEach(cat => {
         opciones += `<option value="${cat.puestoLaboralID}">${cat.descripcion}</option>`;
+        opcionesBuscar += `<option value="${cat.puestoLaboralID}">${cat.descripcion}</option>`;
     });
     comboSelect.innerHTML = opciones;
+    comboSelectBuscar.innerHTML = opcionesBuscar;
 }
 
 const getToken = () => localStorage.getItem("token");
@@ -39,15 +47,19 @@ const authHeaders = () => ({
     "Authorization": `Bearer ${getToken()}`
 }); // Pong en una constante el header de autorizacion para no repetirlo en cada fetch
 
-function obtenerDesarrollador(){
-    fetch('http://localhost:5287/api/Desarrollador', {
-        method: 'GET',
-        headers: authHeaders()
+function obtenerDesarrollador() {
+    const value = document.getElementById("puestolaboralIDBuscar").value;
+    const filtro = {
+        PuestoLaboralID: value ? parseInt(value) : 0
+    };
+
+    fetch('http://localhost:5287/api/Desarrollador/Buscar', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(filtro)
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error("No autorizado o error en el servidor");
-        }
+        if (!response.ok) throw new Error("No autorizado o error en el servidor");
         return response.json();
     })
     .then(data => mostrardesarrollador(data))
@@ -80,7 +92,7 @@ function mostrardesarrollador(data) {
         const tdtelefonodesarrollador = tr.insertCell(3)
         tdtelefonodesarrollador.appendChild(telefonodesarrollador);
 
-        const puestolaboraldarrollador = document.createTextNode(element.puestoLaborales?.descripcion ?? "—")
+        const puestolaboraldarrollador = document.createTextNode(element.puestoLaboralDescripcion ?? "—");
         const tdpuestolaboraldarrollador = tr.insertCell(4)
         tdpuestolaboraldarrollador.appendChild(puestolaboraldarrollador);
 

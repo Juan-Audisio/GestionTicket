@@ -123,6 +123,40 @@ namespace GestionTicket.Controllers
 
             return Ok(desarrollador);
         }
+
+
+[HttpPost("buscar")]
+public async Task<IActionResult> Buscar([FromBody] FiltrosDesarrolladorDTO filtros)
+{
+    var desarrolladores = _context.Desarrolladores
+        .Include(d => d.PuestoLaborales)
+        .AsQueryable();
+
+    if (filtros.PuestoLaboralID > 0)
+    {
+        desarrolladores = desarrolladores.Where(d => d.PuestoLaboralID == filtros.PuestoLaboralID);
+    }
+
+    var listaDesarrolladores = await desarrolladores
+        .OrderBy(d => d.Nombre)
+        .ToListAsync();
+
+    var resultado = listaDesarrolladores.Select(d => new DesarrolladorVistaDTO
+    {
+        DesarrolladorID = d.DesarrolladorID,
+        Nombre = d.Nombre ?? "",
+        DNI = d.DNI ?? "",
+        Email = d.Email ?? "",
+        Telefono = d.Telefono ?? "",
+        Observaciones = d.Observaciones ?? "",
+        PuestoLaboralID = d.PuestoLaboralID,
+        PuestoLaboralDescripcion = d.PuestoLaborales != null ? d.PuestoLaborales.Descripcion : "Sin puesto",
+        UsuarioClienteID = d.UsuarioClienteID ?? "",
+        Eliminado = d.Eliminado
+    }).ToList();
+
+    return Ok(resultado);
+}
         
     }
 } 
